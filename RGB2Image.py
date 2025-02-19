@@ -30,10 +30,15 @@ class CSV2Image:
         # Reshape into 2D image 
         rgb_data = rgb_data.reshape(int(dimensons[0]), int(dimensons[1]), 3)    
 
+        # Convert RGB to BGR
+        bgr_data = np.array([])
+        for rgb in rgb_data:
+            bgr_data.put(rgb[::-1])
         
+        bgr_data = bgr_data.reshape(int(dimensons[0]), int(dimensons[1]), 3)
 
         # Save as PNG
-        cv2.imwrite(self.output_png, rgb_data)
+        cv2.imwrite(self.output_png, bgr_data)
         print(f"PNG saved to {self.output_png}")
 
 
