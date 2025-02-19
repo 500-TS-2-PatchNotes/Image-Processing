@@ -1,9 +1,43 @@
+"""
+ColourExtractor
+=====
+A class that extracts colour information from an image
+
+
+Authors:
+-----
+Dominic Choi
+    GitHub: [CarrotBRRR](https://github.com/CarrotBRRR)
+
+Initialization:
+----
+`ColourExtractor(image_path)`
+
+Methods:
+-----
+- `get_dominant_colours(k=3) -> list[tuple[int, int, int]]`: Extracts the dominant colours using K-means clustering.
+- `get_average_colour() -> tuple[int, int, int]`: Calculates the average colour of the image.
+
+- `get_pixel_colour(x, y) -> tuple[int, int, int]`: Returns the colour of the pixel at the given coordinates.
+- `get_pixel_colours() -> list[tuple[int, int, int]]`: Returns the colours of each pixel in the image.
+
+- `get_dimensions() -> tuple[int, int]`: Returns the dimensions of the image.
+- `get_pixel_count() -> int`: Returns the number of pixels in the image.
+
+- `get_image_path() -> str`: Returns the path of the image.
+- `toCSV(filename=f'./output.csv')`: Converts the image to a CSV file.
+
+Created: 2025-02-18
+"""
+
 import cv2
 import numpy as np
 from pandas import DataFrame
 
 class ColourExtractor:
     def __init__(self, image_path):
+        """Initialises the ColourExtractor object."""
+        self.image_path = image_path
         self.image = cv2.imread(image_path)
         if self.image is None:
             raise ValueError("Image not found or unable to load.")
@@ -33,6 +67,10 @@ class ColourExtractor:
         converted_image = cv2.cvtcolour(self.image, code)
         return converted_image
     
+    def get_pixel_colour(self, x, y) -> tuple[int, int, int]:
+        """Returns the colour of the pixel at the given coordinates."""
+        return tuple(self.image[y, x])
+
     def get_pixel_colours(self) -> list[tuple[int, int, int]]:
         """Returns the colours of each pixel in the image."""
         return [tuple(pixel) for row in self.image for pixel in row]
@@ -41,23 +79,21 @@ class ColourExtractor:
         """Returns the dimensions of the image."""
         return self.image.shape[:2]
     
+    def get_pixel_count(self) -> int:
+        """Returns the number of pixels in the image."""
+        x, y = self.get_dimensions()
+        return x * y
+    
+    def get_image_path(self) -> str:
+        """Returns the path of the image."""
+        return self.image_path
+
     def toCSV(self, filename=f'./output.csv'):
         """Converts the image to a CSV file."""
-        # get resolution
-        height, width = self.get_dimensions()
-        # get pixel colours
-        pixels = self.get_pixel_colours()
-        ps = []
+        rgb_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]
 
-        for pixel in pixels:
-            ps.append(f"{pixel[0]},{pixel[1]},{pixel[2]}")
-
-        # image_data = self.image.reshape(-1, self.image.shape[1] * 3)
-
-        merged_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]
-
-        df = DataFrame(merged_data)
+        df = DataFrame(rgb_data)
         df.to_csv(filename, index=False)
 
-        print(f"CSV file saved as {filename}.")
+        print(f"CSV file saved as {filename}")
 

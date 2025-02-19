@@ -1,0 +1,110 @@
+Test 1: ./test_images/1_000000.jpg
+Dominant Colors: [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
+Average Color: (0, 0, 0)
+CSV file saved as ./output_csv/output_1.csv
+PNG saved to ./output_images/output_1.png
+
+Pixel Count: 8294400
+Time taken: 18359.0338 ms
+
+
+Test 2: ./test_images/2_0000ff.jpg
+Dominant Colors: [(0, 0, 255), (0, 0, 255), (0, 0, 255)]
+Average Color: (0, 0, 255)
+CSV file saved as ./output_csv/output_2.csv
+PNG saved to ./output_images/output_2.png
+
+Pixel Count: 30000
+Time taken: 88.4409 ms
+
+
+Test 3: ./test_images/3_00ff00.jpg
+Dominant Colors: [(0, 255, 0), (0, 255, 0), (0, 255, 0)]
+Average Color: (0, 255, 0)
+CSV file saved as ./output_csv/output_3.csv
+PNG saved to ./output_images/output_3.png
+
+Pixel Count: 50625
+Time taken: 127.7337 ms
+
+
+Test 4: ./test_images/4_00ffff.jpg
+Dominant Colors: [(0, 255, 255), (0, 255, 255), (0, 255, 255)]
+Average Color: (0, 255, 255)
+CSV file saved as ./output_csv/output_4.csv
+PNG saved to ./output_images/output_4.png
+
+Pixel Count: 8294400
+Time taken: 90387.1686 ms
+
+
+Test 5: ./test_images/5_ff0000.jpg
+Dominant Colors: [(255, 0, 0), (255, 0, 0), (255, 0, 0)]
+Average Color: (255, 0, 0)
+CSV file saved as ./output_csv/output_5.csv
+PNG saved to ./output_images/output_5.png
+
+Pixel Count: 50160
+Time taken: 132.3573 ms
+
+
+Test 6: ./test_images/6_ff00ff.jpg
+Dominant Colors: [(255, 0, 255), (255, 0, 255), (255, 0, 255)]
+Average Color: (255, 0, 255)
+CSV file saved as ./output_csv/output_6.csv
+PNG saved to ./output_images/output_6.png
+
+Pixel Count: 30000
+Time taken: 87.3695 ms
+
+
+Test 7: ./test_images/7_ffff00.jpg
+Dominant Colors: [(255, 255, 0), (255, 255, 0), (255, 255, 0)]
+Average Color: (255, 255, 0)
+CSV file saved as ./output_csv/output_7.csv
+PNG saved to ./output_images/output_7.png
+
+Pixel Count: 8294400
+Time taken: 90057.0154 ms
+
+
+Test 8: ./test_images/8_ffffff.jpg
+Dominant Colors: [(255, 255, 255), (255, 255, 255), (255, 255, 255)]
+Average Color: (255, 255, 255)
+CSV file saved as ./output_csv/output_8.csv
+PNG saved to ./output_images/output_8.png
+
+Pixel Count: 8294400
+Time taken: 89921.8491 ms
+
+
+Test 9: ./test_images/testImage_1.jpg
+Dominant Colors: [(131, 133, 129), (68, 70, 70), (230, 230, 225)]
+Average Color: (119, 120, 117)
+CSV file saved as ./output_csv/output_9.csv
+PNG saved to ./output_images/output_9.png
+
+Pixel Count: 480000
+Time taken: 1281.5436 ms
+
+
+Test 10: ./test_images/testImage_2.jpg
+Dominant Colors: [(15, 26, 50), (134, 138, 132), (203, 205, 182)]
+Average Color: (107, 113, 114)
+CSV file saved as ./output_csv/output_10.csv
+PNG saved to ./output_images/output_10.png
+
+Pixel Count: 480000
+Time taken: 1393.565 ms
+
+
+Test 11: ./test_images/nathan.jpg
+Dominant Colors: [(180, 167, 147), (74, 70, 73), (243, 246, 244)]
+Average Color: (154, 148, 141)
+CSV file saved as ./output_csv/output_11.csv
+PNG saved to ./output_images/output_11.png
+
+Pixel Count: 7990272
+Time taken: 20344.0811 ms
+
+
