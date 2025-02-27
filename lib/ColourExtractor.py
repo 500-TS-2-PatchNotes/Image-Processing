@@ -36,7 +36,7 @@ from pandas import DataFrame
 
 class ColourExtractor:
     def __init__(self, image_path):
-        """Initialises the ColourExtractor object."""
+        """Initialises the ColourExtractor object with the given image path."""
         self.image_path = image_path
         self.image = cv2.imread(image_path)
         if self.image is None:
@@ -44,7 +44,7 @@ class ColourExtractor:
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
     
     def get_dominant_colours(self, k=3) -> list[tuple[int, int, int]]:
-        """Extracts the dominant colours using K-means clustering."""
+        """Extracts the dominant colours using K-means clustering and returns a list of tuples of [R, G, B]."""
         pixels = self.image.reshape((-1, 3))
         pixels = np.float32(pixels)
         
@@ -58,7 +58,7 @@ class ColourExtractor:
         return sorted_colours
     
     def get_average_colour(self) -> tuple[int, int, int]:
-        """Calculates the average colour of the image."""
+        """Calculates the average colour of the image and returns a tuple of [R, G, B]."""
         avg_colour = np.mean(self.image, axis=(0, 1)).astype(int)
         return tuple(avg_colour)
     
@@ -68,24 +68,24 @@ class ColourExtractor:
         return converted_image
     
     def get_pixel_colour(self, x, y) -> tuple[int, int, int]:
-        """Returns the colour of the pixel at the given coordinates."""
+        """Returns the colour of the pixel at the given coordinates as a tuple of [R, G, B]."""
         return tuple(self.image[y, x])
 
     def get_pixel_colours(self) -> list[tuple[int, int, int]]:
-        """Returns the colours of each pixel in the image."""
+        """Returns the colours of each pixel in the image as a list of tuples of [R, G, B]."""
         return [tuple(pixel) for row in self.image for pixel in row]
     
     def get_dimensions(self) -> tuple[int, int]:
-        """Returns the dimensions of the image."""
+        """Returns the dimensions of the image as a tuple of [width, height]."""
         return self.image.shape[:2]
     
     def get_pixel_count(self) -> int:
-        """Returns the number of pixels in the image."""
+        """Returns the number of pixels in the image as an int."""
         x, y = self.get_dimensions()
         return x * y
     
     def get_image_path(self) -> str:
-        """Returns the path of the image."""
+        """Returns the path of the image as a string."""
         return self.image_path
 
     def toCSV(self, filename=f'./output.csv'):
