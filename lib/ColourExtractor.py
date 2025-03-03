@@ -97,3 +97,8 @@ class ColourExtractor:
 
         print(f"CSV file saved as {filename}")
 
+    def toDF(self):
+        """Converts the image to a DataFrame."""
+        rgb_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]
+
+        return DataFrame(rgb_data)
