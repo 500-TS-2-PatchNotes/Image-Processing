@@ -10,3 +10,6 @@ def main():
     df = extractor.toDF()
 
     df.head()
+
+if __name__ == "__main__":
+    main()
