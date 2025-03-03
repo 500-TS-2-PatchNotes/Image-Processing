@@ -57,11 +57,23 @@ class ColourExtractor:
         
         return sorted_colours
     
+    def get_dominant_colours_hex(self, k=3) -> list[str]:
+        """Extracts the dominant colours using K-means clustering and returns a list of hex strings."""
+        dominant_colours = self.get_dominant_colours(k)
+        hex_colours = [f"#{r:02x}{g:02x}{b:02x}" for r, g, b in dominant_colours]
+        return hex_colours
+
     def get_average_colour(self) -> tuple[int, int, int]:
         """Calculates the average colour of the image and returns a tuple of [R, G, B]."""
         avg_colour = np.mean(self.image, axis=(0, 1)).astype(int)
         return tuple(avg_colour)
     
+    def get_average_colour_hex(self) -> str:
+        """Calculates the average colour of the image and returns a hex string."""
+        avg_colour = self.get_average_colour()
+        hex_colour = f"#{avg_colour[0]:02x}{avg_colour[1]:02x}{avg_colour[2]:02x}"
+        return hex_colour
+
     def convert_colour_space(self, code) -> np.ndarray:
         """Converts the image to a different colour space based on the given code."""
         converted_image = cv2.cvtcolour(self.image, code)

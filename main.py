@@ -10,7 +10,10 @@ def main():
     extractor = ColourExtractor(img_loc)
     
     print(f"Dominant Colors: {extractor.get_dominant_colours()}".replace(", np.", " ").replace("(np.", "(").replace("uint8(", "").replace(") ", ", ").replace("))", ")"))
-    print(f"Average Color: {extractor.get_average_colour()}".replace(", np.", " ").replace("(np.", "(").replace("int64(", "").replace(") ", ", ").replace("))", ")"))
+    print(f"Dominant Colors Hex: {extractor.get_dominant_colours_hex()}".replace(", np.", " ").replace("(np.", "(").replace("uint8(", "").replace(") ", ", ").replace("))", ")"))
+
+    print(f"Average Color: {extractor.get_average_colour()}")
+    print(f"Average Color Hex: {extractor.get_average_colour_hex()}")
 
     df = extractor.toDF()
 
