@@ -35,14 +35,14 @@ import numpy as np
 from pandas import DataFrame
 
 class ColourExtractor:
-    def __init__(self, image_path):
+    def __init__(self, image_path : str):
         """Initialises the ColourExtractor object with the given image path."""
         self.image_path = image_path
         self.image = cv2.imread(image_path)
         if self.image is None:
             raise ValueError("Image not found or unable to load.")
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-    
+
     def get_dominant_colours(self, k=3) -> list[tuple[int, int, int]]:
         """Extracts the dominant colours using K-means clustering and returns a list of tuples of [R, G, B]."""
         pixels = self.image.reshape((-1, 3))
