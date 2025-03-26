@@ -109,6 +109,10 @@ class ColourExtractor:
 
         print(f"CSV file saved as {filename}")
 
+    def get_euclidean_distance(self, colour1, colour2) -> float:
+        """Calculates the Euclidean distance between two colours."""
+        return np.linalg.norm(np.array(colour1) - np.array(colour2))
+    
     def toDF(self):
         """Converts the image to a DataFrame."""
         rgb_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]

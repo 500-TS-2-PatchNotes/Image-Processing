@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 class Regressor:
     def train(self, X_train, y_train):
-        self.regressor = RandomForestRegressor(n_estimators=3, random_state=0)
+        self.regressor = RandomForestRegressor(n_estimators=7, max_features=3, random_state=0)
         self.regressor.fit(X_train, y_train)
 
     def predict(self, X_test):
