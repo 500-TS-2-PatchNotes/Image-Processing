@@ -100,15 +100,11 @@ class ColourExtractor:
         """Returns the path of the image as a string."""
         return self.image_path
 
-    def toHex(self):
-        """Converts the image to a hex string."""
-        hex_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]
-        return hex_data
-
     def toCSV(self, filename=f'./output.csv'):
         """Converts the image to a CSV file."""
+        rgb_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]
 
-        df = DataFrame(self.toHex())
+        df = DataFrame(rgb_data)
         df.to_csv(filename, index=False)
 
         print(f"CSV file saved as {filename}")
@@ -119,5 +115,6 @@ class ColourExtractor:
     
     def toDF(self):
         """Converts the image to a DataFrame."""
+        rgb_data = [[f"#{r:02x}{g:02x}{b:02x}" for r, g, b in row] for row in self.image]
 
-        return DataFrame(self.toHex())
+        return DataFrame(rgb_data)
