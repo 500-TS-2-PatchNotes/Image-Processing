@@ -12,7 +12,7 @@ import requests
 import numpy as np
 from datetime import datetime
 
-from firebase_functions import https_fn
+from firebase_functions import firestore_fn, https_fn
 import firebase_admin
 from firebase_admin import firestore, storage, credentials
 
@@ -63,40 +63,46 @@ if __name__ == "__main__":
     regressor.train(np.array(X_train), np.array(y_train))
 
 
-@https_fn.on_request()
-def analyze_image(req: https_fn.Request) -> https_fn.Response:
+@firestore_fn.on_document_created('images/{user_id}/{image_id}')
+def analyze_image(event: firestore_fn.Event[firestore_fn.DocumentSnapshot | None]) -> str:
     """
-    HTTPS function that:
-      - Reads 'image_path', 'user_id', and 'image_name' from query parameters.
-      - Uses ColourExtractor to get dominant colour (hex) from the image.
-      - Uses Regressor to predict a level.
-      - Determines a status (healthy if level < 2, unhealthy otherwise).
-      - Stores the data in Firestore under the 'wounds' collection.
+    Listens for new images uploaded to images/{user_id}/{image_id}.
+      - Reads 'image_id', 'user_id'
+      - Uses ColourExtractor to get dominant colour (hex) from the image
+      - Uses Regressor to predict a level
+      - Determines a status (healthy if level < 2, unhealthy otherwise)
+      - Stores the data in Firestore under the 'wounds' collection
     """
-    # ???
-    image_path = req.args.get('image_path')
-    user_id = req.args.get('user_id')
-    image_name = req.args.get('image_name')
+    
+    if event.data is None:
+        return "No data provided."
+
+    # Get the image path, user ID, and image name from the query parameters
+    image_id = event.data['image_id']
+    user_id = event.data['user_id']
+
+    image_path = f"images/{user_id}/{image_id}"
 
     # Download the image
-    response = requests.get(image_path)
-    with open(f"/tmp/{image_name}", "wb") as f:
-        f.write(response.content)
+    bucket = storage.bucket()
+    blob = bucket.blob(image_path)
+    blob.download_to_filename(f"/tmp/{image_path}")
 
-    # Extract the dominant colour
-    extractor = ColourExtractor(f"/tmp/{image_name}")
-    X_test = extractor.get_dominant_colours()[0]
+    # Extract the dominant colour from the image
+    extractor = ColourExtractor(f"/tmp/{image_path}")
+    dominant_colour = extractor.get_dominant_colours_hex()[0]
 
-    # Predict the level
-    y_pred = regressor.predict([X_test])[0]
+    # Predict the level using the Regressor
+    X_test = np.array([dominant_colour])
+    y_pred = regressor.predict(X_test)[0]
 
     # Determine the status
-    status = y_pred <= 2
-
+    status = 0 if y_pred < 2 else 1
+    
     # Store the data in Firestore
     db.collection('wounds').add({
         'user_id': user_id,
-        'image_name': image_name,
+        'image_name': image_id,
         'analyze_time': datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
         'level': y_pred,
         'unhealthy': status
