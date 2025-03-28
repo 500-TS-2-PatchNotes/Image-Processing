@@ -129,15 +129,16 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
     content_type = event.data.content_type
 
     print(f"[INFO] File {filepath} uploaded to bucket {bucket_name}.")
-    print("[INFO] Starting analysis...")
 
     if not content_type or not content_type.startswith("image/"):
-        print(f"This is not an image. ({content_type})")
+        print(f"[INFO] This is not an image. ({content_type}) Returning...")
         return
     
     if not filepath.startswith("images/"):
-        print(f"File path does not start with 'images/'. ({filepath})")
+        print(f"[INFO] File path does not start with 'images/'. ({filepath}) Returning...")
         return
+
+    print("[INFO] Starting analysis...")
 
     user_id = filepath.split('/')[1]
     image_id = filepath.split('/')[2]
@@ -192,7 +193,7 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     db.collection('users').document(str(user_id)).collection('wounds').add(
-        document_id = image_id,
+        document_id = image_id.strip('.jpg'),
         document_data = {
             'user_id': user_id,
             'image_name': image_id,
