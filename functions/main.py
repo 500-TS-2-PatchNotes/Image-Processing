@@ -135,6 +135,10 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
         print(f"This is not an image. ({content_type})")
         return
     
+    if not filepath.startswith("images/"):
+        print(f"File path does not start with 'images/'. ({filepath})")
+        return
+
     user_id = filepath.split('/')[1]
     image_id = filepath.split('/')[2]
     print(f"[INFO] User ID: {user_id}, Image ID: {image_id}")
