@@ -12,6 +12,7 @@ import requests
 import numpy as np
 from datetime import datetime
 
+from firebase_functions.core import init
 from firebase_functions import firestore_fn, https_fn
 import firebase_admin
 from firebase_admin import firestore, storage, credentials
