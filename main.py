@@ -28,23 +28,31 @@ db = firestore.client()
 
 def fetch_training_images() -> list:
     """
-    Queries the 'training_images' collection in Storage and fetches the images.
-    
+    Queries the 'training_images' collection in Firebase Storage
+
     Returns:
         A list of ColourExtractor objects
     """
     images = []
-    bucket = storage.bucket()
-    blobs = bucket.list_blobs(prefix="training_images/")
-    
-    for i, blob in enumerate(blobs):
+    # Fetch the training images from Firebase Storage
+    collection = db.collection('training_images').get()
+    # Extract the image URLs from the documents
+    image_urls = [doc.to_dict()['image_url'] for doc in collection]
+    # Download each image and create a ColourExtractor object
+    for i, image_url in enumerate(image_urls):
         # Download the image
-        blob.download_to_filename(f"/tmp/training_image_{i}.png")
-        images.append(ColourExtractor(f"/tmp/training_image_{i}.png"))
+        response = requests.get(image_url)
+        # Save the image to a temporary file
+        with open('/tmp/training_image.jpg', 'wb') as f:
+            f.write(response.content)
+        # Create a ColourExtractor object
+        extractor = ColourExtractor('/tmp/training_image.jpg')
+        images.append(extractor)
 
     return images
 
-if __name__ == "__main__":
+@init
+def train_regressor() -> None:
     """
     Initialize the training data and train the Regressor.
     """
