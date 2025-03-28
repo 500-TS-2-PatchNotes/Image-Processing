@@ -6,3 +6,5 @@ output_*.png
 
 output*.csv
 output*.png
+
+*.log

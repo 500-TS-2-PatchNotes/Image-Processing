@@ -1,0 +1,4 @@
+*.local
+tmp/
+
+patchnotes-d3b06-*.json
