@@ -114,17 +114,6 @@ def train_regressor() -> bool:
 def init_train_regressor() -> bool:
     return train_regressor()
 
-# @https_fn.on_request()
-# def http_test(request: https_fn.Request) -> https_fn.Response:
-#     """
-#     Test function for HTTP requests.
-#     """
-
-#     print("[INFO] HTTP Test function called!")
-#     print("[INFO] Request data:", request.data)
-
-#     return https_fn.Response("Lorem Ipsum", status=200, content_type="text/plain")
-
 @storage_fn.on_object_finalized(memory=512)
 def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) -> str:
     """

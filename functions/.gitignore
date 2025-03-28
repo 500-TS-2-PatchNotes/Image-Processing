@@ -1,4 +1,4 @@
 *.local
 tmp/
-
+venv/
 patchnotes-d3b06-*.json
