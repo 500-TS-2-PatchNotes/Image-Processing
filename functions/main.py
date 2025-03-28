@@ -16,13 +16,14 @@ import joblib
 
 from firebase_functions.core import init
 from firebase_functions import https_fn, storage_fn
-import firebase_admin
+from firebase_admin import initialize_app
 from firebase_admin import firestore, storage, credentials
 
 from PatchNotesLib.ColourExtractor import ColourExtractor
 from PatchNotesLib.Colour2BacteriaRegressor import Regressor
 
-app = firebase_admin.initialize_app()
+cred = credentials.Certificate('./patchnotes-d3b06-93b5440cb302.json')
+app = initialize_app(cred)
 
 db = firestore.client(app)
 bucket = storage.bucket(app=app)
@@ -113,18 +114,18 @@ def train_regressor() -> bool:
 def init_train_regressor() -> bool:
     return train_regressor()
 
-@https_fn.on_request()
-def http_test(request: https_fn.Request) -> https_fn.Response:
-    """
-    Test function for HTTP requests.
-    """
+# @https_fn.on_request()
+# def http_test(request: https_fn.Request) -> https_fn.Response:
+#     """
+#     Test function for HTTP requests.
+#     """
 
-    print("[INFO] HTTP Test function called!")
-    print("[INFO] Request data:", request.data)
+#     print("[INFO] HTTP Test function called!")
+#     print("[INFO] Request data:", request.data)
 
-    return https_fn.Response("Lorem Ipsum", status=200, content_type="text/plain")
+#     return https_fn.Response("Lorem Ipsum", status=200, content_type="text/plain")
 
-@storage_fn.on_object_finalized()
+@storage_fn.on_object_finalized(memory=512)
 def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) -> str:
     """
     Listens for new images uploaded to images/{user_id}/{image_id} in Firebase Storage.
@@ -197,32 +198,16 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
     # timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    # Check if User exists
-    if not db.collection('users').document(str(user_id)).get().exists:
-        print("[INFO] User does not exist, creating...")
-        db.collection('users').document(str(user_id)).collection('wounds').add(
-            document_id = image_id,
-            document_data = {
-                'user_id': user_id,
-                'image_name': image_id,
-                'analyze_time': timestamp,
-                'level': y_pred,
-                'unhealthy': status
-            }
-        )
-
-    else:
-        print("[INFO] User exists, adding data...")
-        db.collection('users').document(str(user_id)).collection('wounds').add(
-            document_id = image_id,
-            document_data = {
-                'user_id': user_id,
-                'image_name': image_id,
-                'analyze_time': datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
-                'level': y_pred,
-                'unhealthy': status
-            }
-        )
+    db.collection('users').document(str(user_id)).collection('wounds').add(
+        document_id = image_id,
+        document_data = {
+            'user_id': user_id,
+            'image_name': image_id,
+            'analyze_time': timestamp,
+            'level': y_pred,
+            'unhealthy': status
+        }
+    )
 
     print("[INFO] Data stored in Firestore!")
 

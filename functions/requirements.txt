@@ -5,3 +5,7 @@ pandas
 numpy
 scikit-learn
 opencv-python
+Flask
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
