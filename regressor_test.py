@@ -1,6 +1,6 @@
-import lib.ColourExtractor as ce
-import lib.data2img as d2i
-import lib.Colour2BacteriaRegressor as c2b
+import PatchNotesLib.ColourExtractor as ce
+import PatchNotesLib.data2img as d2i
+import PatchNotesLib.Colour2BacteriaRegressor as c2b
 
 def main():
     extractors = []
@@ -15,8 +15,7 @@ def main():
     X_train = []
     y_train = [0, 1, 2, 3, 4, 5, 6] # =<2 is healthy range
     for i, extractor in enumerate(extractors):
-        print(f"0: {extractor.get_dominant_colours()[0]})")
-        print(f"1: {extractor.get_dominant_colours()[1]})")
+        print(f"Dominant Colour: {extractor.get_dominant_colours()[0]})")
         print()
         X_train.append(extractor.get_dominant_colours()[0])
 
