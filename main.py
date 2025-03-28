@@ -18,8 +18,8 @@ from firebase_functions import https_fn, storage_fn
 import firebase_admin
 from firebase_admin import firestore, storage, credentials
 
-from lib.ColourExtractor import ColourExtractor
-from lib.Colour2BacteriaRegressor import Regressor
+from PatchNotesLib.ColourExtractor import ColourExtractor
+from PatchNotesLib.Colour2BacteriaRegressor import Regressor
 
 
 app = firebase_admin.initialize_app()
