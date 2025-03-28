@@ -1,0 +1,7 @@
+firebase_functions>=0.1.0
+firebase_admin
+functions_framework
+pandas
+numpy
+scikit-learn
+opencv-python
