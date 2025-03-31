@@ -122,7 +122,7 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
       - Uses ColourExtractor to get dominant colour (hex) from the image
       - Uses Regressor to predict a level
       - Determines a status (healthy if level < 2, unhealthy otherwise)
-      - Stores the data in Firestore under the 'wounds' collection
+      - Stores the data in Firestore under the 'wound_data' collection
     """
     bucket_name = event.data.bucket
     filepath = event.data.name
@@ -140,15 +140,19 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
 
     print("[INFO] Starting analysis...")
 
+    image_url = event.data.media_link
     user_id = filepath.split('/')[1]
     image_id = filepath.split('/')[2]
-    print(f"[INFO] User ID: {user_id}, Image ID: {image_id}")
 
+    print(f"[INFO] User ID: {user_id}, Image ID: {image_id}")
+    
     # load the trained regressor from the file
     if not os.path.exists('./tmp/regressor.pkl'):
         print("[INFO] Regressor not found! Training...")
+
         if not train_regressor():
-            return "Regressor training failed."
+            return "[ERROR] Regressor training failed."
+        
         print("[INFO] Regressor trained successfully!")
 
     print("[INFO] Loading Regressor from file...")
@@ -192,17 +196,18 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
     # timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    db.collection('users').document(str(user_id)).collection('wounds').add(
-        document_id = image_id.strip('.jpg'),
+    db.collection('users').document(str(user_id)).collection('wound_data').add(
+        document_id = image_id.strip('.jpg').strip('.png'),
         document_data = {
             'user_id': user_id,
             'image_name': image_id,
             'analyze_time': timestamp,
             'level': y_pred,
-            'unhealthy': status
+            'unhealthy': status,
+            'URL' : image_url
         }
     )
 
     print("[INFO] Data stored in Firestore!")
 
-    return f"Analysis complete. Level: {y_pred}, Status: {status}"
+    return f"[INFO] Analysis complete. Level: {y_pred}, Status: {status}"
