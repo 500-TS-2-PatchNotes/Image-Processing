@@ -13,6 +13,7 @@ import requests
 import numpy as np
 from datetime import datetime
 import joblib
+import uuid
 
 from firebase_functions.core import init
 from firebase_functions import https_fn, storage_fn
@@ -138,11 +139,18 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
         print(f"[INFO] File path does not start with 'images/'. ({filepath}) Returning...")
         return
 
-    print("[INFO] Starting analysis...")
+    try:
+        user_id = filepath.split('/')[1]
+        image_id = filepath.split('/')[2]
+    except Exception as e:
+        print(f"[INFO] Error parsing image path. Likely not uploaded to the correct path format, or is not related to the user. ({filepath})")
+        return
 
-    image_url = event.data.media_link
-    user_id = filepath.split('/')[1]
-    image_id = filepath.split('/')[2]
+    if image_id == '' or None:
+        print("[INFO] Image was not uploaded correctly!")
+        return
+    
+    print("[INFO] Starting analysis...")
 
     print(f"[INFO] User ID: {user_id}, Image ID: {image_id}")
     
@@ -167,11 +175,33 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
     blob = bucket.blob(filepath)
     image = blob.download_as_bytes()
 
+    md = blob.metadata or {}
+        
     with open(f"./tmp/wound_image.png", "wb") as f:
         f.write(image)
         f.close()
 
     print(f"[INFO] Image downloaded to ./tmp/wound_image.png!")
+
+    print(f"[INFO] Getting Firebase Storage Download Token!")
+
+    # Check if the token is already set
+    if "firebaseStorageDownloadTokens" in md:
+        print(f"[INFO] Token already exists: {md['firebaseStorageDownloadTokens']}")
+        token = md["firebaseStorageDownloadTokens"]
+
+    else:
+        print("[INFO] No token found. Generating a new one.")
+        # Generate a new token
+        new_token = str(uuid.uuid4())
+        md["firebaseStorageDownloadTokens"] = new_token
+        blob.metadata = md
+        blob.patch()  # Save the updated metadata
+        print(f"[INFO] New token generated: {new_token}")
+        token = new_token
+
+    image_url = f"https://firebasestorage.googleapis.com/v0/b/{bucket_name.replace("/","%2F")}/o/{filepath.replace('/','%2F')}?alt=media&token={token}"
+    print(f"[INFO] Image URL: {image_url}")
 
     print("[INFO] Extracting dominant colour...")
     # Extract the dominant colour from the image
