@@ -220,7 +220,7 @@ def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) ->
     print(f"[INFO] Predicted level: {y_pred}")
 
     # Determine the status
-    status = 0 if y_pred < 2 else 1
+    status = 0 if y_pred < 3 else 1
     print(f"[INFO] Status: {status} = {'Healthy' if status == 0 else 'Unhealthy'}")
 
     # timestamp
