@@ -36,36 +36,53 @@ print("[INFO] Global regressor variable initialized!")
 def fetch_training_images() -> list:
     """
     Queries the 'training_images' collection in Firebase Storage
+    Each document contains a URLs to multiple training images for the same predicted level
 
     Returns:
         A list of ColourExtractor objects
+        A list of levels corresponding to the ColourExtractor objects
     """
     images = []
-
+    levels = []
     # Fetch the training images from Firebase Storage
     print("[INFO] Fetching training images from Firestore...")
     collection = db.collection('training_images').get()
 
-    # Extract the image URLs from the documents
-    image_urls = [doc.to_dict()['url'] for doc in collection]
-    print(f"[INFO] Found {len(image_urls)} training image URLs!")
+    if not collection:
+        print("[ERROR] No training images found!")
+        return [], []
+    
+    print(f"[INFO] Found {len(collection)} training images!")
+    for doc in collection:
+        doc_name = doc.id
+        doc_data = doc.to_dict()
+        image_urls = doc_data.get('urls', [])
+        
+        level = int(doc.id.strip('L'))
+        
+        print(f"[INFO] Document ID: {doc_name}, Level: {level}")
+        if level is not None and image_urls:
+            for url in image_urls:
+                # Download the image from the URL
+                print(f"[INFO] Downloading image from URL: {url}")
+                try:
+                    response = requests.get(url)
+                    if response.status_code == 200:
+                        with open(f"./tmp/training_image.jpg", "wb") as f:
+                            f.write(response.content)
+                            f.close()
 
-    print("[INFO] Downloading training images...")
-    # Download each image and create a ColourExtractor object
-    for image_url in image_urls:
-        # Download the image
-        response = requests.get(image_url)
+                except Exception as e:
+                    print(f"[ERROR] Error downloading image: {e}")
+                    return [], []
 
-        # Save the image to a temporary file
-        with open('./tmp/temp_image.jpg', 'wb') as f:
-            f.write(response.content)
+                extractor = ColourExtractor(f"./tmp/training_image.jpg")
+                levels.append(level)
+                images.append(extractor)
 
-        extractor = ColourExtractor('./tmp/temp_image.jpg')
-        images.append(extractor)
-
-    print(f"[INFO] Training image {len(images)}/{len(image_urls)} extractors created.")
-
-    return images
+        print(f"[INFO] {len(images)} extractors created!")
+    
+    return images, levels
 
 def train_regressor() -> bool:
     """
@@ -83,7 +100,7 @@ def train_regressor() -> bool:
     print("[INFO] Fetching Training Data...")
 
     # Fetch the training images
-    training_extractors = fetch_training_images()
+    training_extractors, y_train = fetch_training_images()
 
     if training_extractors == []:
         print("[ERROR] No training images found!")
@@ -91,7 +108,6 @@ def train_regressor() -> bool:
 
     # Extract the dominant colours from the training images
     X_train = []
-    y_train = [0, 1, 2, 3, 4, 5, 6]
 
     for extractor in training_extractors:
         X_train.append(extractor.get_dominant_colours()[0])
@@ -115,7 +131,7 @@ def train_regressor() -> bool:
 def init_train_regressor() -> bool:
     return train_regressor()
 
-@storage_fn.on_object_finalized(memory=512)
+@storage_fn.on_object_finalized(memory=1024)
 def analyze_image(event: storage_fn.CloudEvent[storage_fn.StorageObjectData]) -> str:
     """
     Listens for new images uploaded to images/{user_id}/{image_id} in Firebase Storage.
