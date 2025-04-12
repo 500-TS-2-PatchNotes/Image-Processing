@@ -1,8 +1,8 @@
 import time
 import os
 
-from lib.ColourExtractor import *
-from lib.data2img import *
+from PatchNotesLib.ColourExtractor import *
+from PatchNotesLib.data2img import *
 
 def test_internal_methods(extractor : ColourExtractor):
     print(f"Dominant Colors: {extractor.get_dominant_colours()}".replace(", np.", " ").replace("(np.", "(").replace("uint8(", "").replace(") ", ", ").replace("))", ")"))
